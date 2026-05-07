@@ -1,60 +1,131 @@
-<?php include 'koneksi.php'; ?>
+<?php
+include 'koneksi.php';
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>PHP CRUD Railway</title>
-</head>
-<body>
-    <h2>Tambah Data</h2>
-    <form method="POST">
-        <input type="text" name="nama" placeholder="Nama" required>
-        <input type="sandi" name="sandi" placeholder="sandi" required>
-        <button type="submit" name="tambah">Simpan</button>
-    </form>
-
-    <?php
-
+// Tampilkan error
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-    // Logika Create
-    if(isset($_POST['tambah'])){
-        $nama = $_POST['nama'];
-        $sandi = $_POST['sandi'];
-        mysqli_query($koneksi, "INSERT INTO users (nama, sandi) VALUES('$nama', '$sandi')");
-    }
+// ==========================
+// TAMBAH DATA
+// ==========================
+if (isset($_POST['tambah'])) {
 
-    // Logika Delete
-    if(isset($_GET['hapus'])){
-        $id = $_GET['hapus'];
-        mysqli_query($koneksi, "DELETE FROM users WHERE id=$id");
+    $nama  = mysqli_real_escape_string($koneksi, $_POST['nama']);
+    $sandi = mysqli_real_escape_string($koneksi, $_POST['sandi']);
+
+    $query = "INSERT INTO users (nama, sandi) VALUES ('$nama', '$sandi')";
+
+    if (mysqli_query($koneksi, $query)) {
         header("Location: index.php");
+        exit;
+    } else {
+        echo "Error: " . mysqli_error($koneksi);
     }
-    ?>
+}
+
+// ==========================
+// HAPUS DATA
+// ==========================
+if (isset($_GET['hapus'])) {
+
+    $id = (int) $_GET['hapus'];
+
+    $query = "DELETE FROM users WHERE id = $id";
+
+    if (mysqli_query($koneksi, $query)) {
+        header("Location: index.php");
+        exit;
+    } else {
+        echo "Error: " . mysqli_error($koneksi);
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PHP CRUD Railway</title>
+
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            padding:20px;
+        }
+
+        input, button{
+            padding:10px;
+            margin:5px;
+        }
+
+        table{
+            border-collapse: collapse;
+            width:100%;
+            margin-top:20px;
+        }
+
+        table, th, td{
+            border:1px solid #ccc;
+        }
+
+        th, td{
+            padding:10px;
+            text-align:left;
+        }
+
+        a{
+            color:red;
+            text-decoration:none;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Tambah Data</h2>
+
+    <form method="POST">
+
+        <input type="text" name="nama" placeholder="Nama" required>
+
+        <!-- sebelumnya type="sandi" salah -->
+        <input type="password" name="sandi" placeholder="Password" required>
+
+        <button type="submit" name="tambah">Simpan</button>
+
+    </form>
 
     <h2>Data Users</h2>
-    <table border="1">
+
+    <table>
         <tr>
             <th>ID</th>
             <th>Nama</th>
-            <th>sandi</th>
+            <th>Password</th>
             <th>Aksi</th>
         </tr>
+
         <?php
         $data = mysqli_query($koneksi, "SELECT * FROM users");
-        while($d = mysqli_fetch_array($data)){
+
+        while($d = mysqli_fetch_assoc($data)){
         ?>
+
         <tr>
-            <td><?php echo $d['id']; ?></td>
-            <td><?php echo $d['nama']; ?></td>
-            <td><?php echo $d['sandi']; ?></td>
+            <td><?= $d['id']; ?></td>
+            <td><?= $d['nama']; ?></td>
+            <td><?= $d['sandi']; ?></td>
             <td>
-                <a href="index.php?hapus=<?php echo $d['id']; ?>">Hapus</a>
+                <a href="index.php?hapus=<?= $d['id']; ?>" onclick="return confirm('Yakin hapus data?')">
+                    Hapus
+                </a>
             </td>
         </tr>
+
         <?php } ?>
+
     </table>
+
 </body>
 </html>
