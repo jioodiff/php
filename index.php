@@ -1,55 +1,56 @@
 <?php
 include 'koneksi.php';
 
-// ==========================
-// ERROR REPORT
-// ==========================
 ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // ==========================
 // TAMBAH DATA
 // ==========================
-if (isset($_POST['tambah'])) {
+if(isset($_POST['tambah'])){
 
     $nama  = mysqli_real_escape_string($koneksi, $_POST['nama']);
     $sandi = mysqli_real_escape_string($koneksi, $_POST['sandi']);
 
-    $query = "INSERT INTO users (nama, sandi) VALUES ('$nama', '$sandi')";
+    mysqli_query($koneksi,
+        "INSERT INTO users(nama, sandi)
+         VALUES('$nama','$sandi')"
+    );
 
-    mysqli_query($koneksi, $query);
-
-    header("Location: index.php");
+    header("Location:index.php");
     exit;
 }
 
 // ==========================
 // HAPUS DATA
 // ==========================
-if (isset($_GET['hapus'])) {
+if(isset($_GET['hapus'])){
 
-    $id = (int) $_GET['hapus'];
+    $id = (int)$_GET['hapus'];
 
-    mysqli_query($koneksi, "DELETE FROM users WHERE id=$id");
+    mysqli_query($koneksi,
+        "DELETE FROM users WHERE id=$id"
+    );
 
-    header("Location: index.php");
+    header("Location:index.php");
     exit;
 }
 
 // ==========================
-// EDIT DATA
+// AMBIL DATA EDIT
 // ==========================
-$edit = false;
-$editData = null;
+$editMode = false;
+$editData = [];
 
-if (isset($_GET['edit'])) {
+if(isset($_GET['edit'])){
 
-    $edit = true;
+    $editMode = true;
 
-    $id = (int) $_GET['edit'];
+    $id = (int)$_GET['edit'];
 
-    $result = mysqli_query($koneksi, "SELECT * FROM users WHERE id=$id");
+    $result = mysqli_query($koneksi,
+        "SELECT * FROM users WHERE id=$id"
+    );
 
     $editData = mysqli_fetch_assoc($result);
 }
@@ -57,19 +58,20 @@ if (isset($_GET['edit'])) {
 // ==========================
 // UPDATE DATA
 // ==========================
-if (isset($_POST['update'])) {
+if(isset($_POST['update'])){
 
-    $id    = (int) $_POST['id'];
+    $id    = (int)$_POST['id'];
     $nama  = mysqli_real_escape_string($koneksi, $_POST['nama']);
     $sandi = mysqli_real_escape_string($koneksi, $_POST['sandi']);
 
-    $query = "UPDATE users 
-              SET nama='$nama', sandi='$sandi' 
-              WHERE id=$id";
+    mysqli_query($koneksi,
+        "UPDATE users
+         SET nama='$nama',
+             sandi='$sandi'
+         WHERE id=$id"
+    );
 
-    mysqli_query($koneksi, $query);
-
-    header("Location: index.php");
+    header("Location:index.php");
     exit;
 }
 ?>
@@ -77,129 +79,147 @@ if (isset($_POST['update'])) {
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CRUD Railway PHP</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <style>
-        body{
-            font-family: Arial;
-            padding:20px;
-            background:#f5f5f5;
-        }
+<title>CRUD Railway</title>
 
-        .container{
-            max-width:900px;
-            margin:auto;
-            background:white;
-            padding:20px;
-            border-radius:10px;
-        }
+<style>
 
-        h2{
-            margin-bottom:15px;
-        }
+body{
+    font-family:Arial;
+    background:#f0f2f5;
+    padding:30px;
+}
 
-        input{
-            padding:10px;
-            width:100%;
-            margin-bottom:10px;
-            box-sizing:border-box;
-        }
+.container{
+    max-width:900px;
+    margin:auto;
+    background:white;
+    padding:25px;
+    border-radius:12px;
+}
 
-        button{
-            padding:10px 15px;
-            border:none;
-            cursor:pointer;
-            border-radius:5px;
-        }
+h2{
+    margin-bottom:15px;
+}
 
-        .btn-tambah{
-            background:#28a745;
-            color:white;
-        }
+input{
+    width:100%;
+    padding:12px;
+    margin-bottom:12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    box-sizing:border-box;
+}
 
-        .btn-update{
-            background:#007bff;
-            color:white;
-        }
+button{
+    padding:12px 20px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    color:white;
+}
 
-        table{
-            width:100%;
-            border-collapse:collapse;
-            margin-top:20px;
-        }
+.btn-simpan{
+    background:#28a745;
+}
 
-        table, th, td{
-            border:1px solid #ddd;
-        }
+.btn-update{
+    background:#007bff;
+}
 
-        th{
-            background:#333;
-            color:white;
-        }
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:25px;
+}
 
-        th, td{
-            padding:10px;
-            text-align:left;
-        }
+table, th, td{
+    border:1px solid #ddd;
+}
 
-        a{
-            text-decoration:none;
-            padding:5px 10px;
-            border-radius:5px;
-            color:white;
-        }
+th{
+    background:#333;
+    color:white;
+}
 
-        .edit{
-            background:orange;
-        }
+th, td{
+    padding:12px;
+}
 
-        .hapus{
-            background:red;
-        }
-    </style>
+a{
+    text-decoration:none;
+    padding:6px 10px;
+    color:white;
+    border-radius:5px;
+}
+
+.btn-edit{
+    background:orange;
+}
+
+.btn-hapus{
+    background:red;
+}
+
+</style>
 </head>
+
 <body>
 
 <div class="container">
 
     <h2>
-        <?= $edit ? 'Edit Data' : 'Tambah Data'; ?>
+        <?= $editMode ? 'Edit User' : 'Tambah User'; ?>
     </h2>
 
     <form method="POST">
 
-        <?php if($edit){ ?>
-            <input type="hidden" name="id" value="<?= $editData['id']; ?>">
+        <?php if($editMode){ ?>
+
+            <input
+                type="hidden"
+                name="id"
+                value="<?= $editData['id']; ?>"
+            >
+
         <?php } ?>
 
-        <input 
-            type="text" 
-            name="nama" 
-            placeholder="Nama"
-            value="<?= $edit ? $editData['nama'] : ''; ?>"
+        <input
+            type="text"
+            name="nama"
+            placeholder="Masukkan nama"
+            value="<?= $editMode ? $editData['nama'] : ''; ?>"
             required
         >
 
-        <input 
-            type="password" 
-            name="sandi" 
-            placeholder="Password"
-            value="<?= $edit ? $editData['sandi'] : ''; ?>"
+        <input
+            type="password"
+            name="sandi"
+            placeholder="Masukkan password"
+            value="<?= $editMode ? $editData['sandi'] : ''; ?>"
             required
         >
 
-        <?php if($edit){ ?>
+        <?php if($editMode){ ?>
 
-            <button type="submit" name="update" class="btn-update">
-                Update
+            <button
+                type="submit"
+                name="update"
+                class="btn-update"
+            >
+                Update Data
             </button>
 
         <?php } else { ?>
 
-            <button type="submit" name="tambah" class="btn-tambah">
-                Simpan
+            <button
+                type="submit"
+                name="tambah"
+                class="btn-simpan"
+            >
+                Simpan Data
             </button>
 
         <?php } ?>
@@ -218,9 +238,13 @@ if (isset($_POST['update'])) {
         </tr>
 
         <?php
-        $data = mysqli_query($koneksi, "SELECT * FROM users ORDER BY id DESC");
+
+        $data = mysqli_query($koneksi,
+            "SELECT * FROM users ORDER BY id DESC"
+        );
 
         while($d = mysqli_fetch_assoc($data)){
+
         ?>
 
         <tr>
@@ -231,16 +255,16 @@ if (isset($_POST['update'])) {
 
             <td>
 
-                <a 
-                    href="index.php?edit=<?= $d['id']; ?>" 
-                    class="edit"
+                <a
+                    href="index.php?edit=<?= $d['id']; ?>"
+                    class="btn-edit"
                 >
                     Edit
                 </a>
 
-                <a 
-                    href="index.php?hapus=<?= $d['id']; ?>" 
-                    class="hapus"
+                <a
+                    href="index.php?hapus=<?= $d['id']; ?>"
+                    class="btn-hapus"
                     onclick="return confirm('Yakin ingin hapus data?')"
                 >
                     Hapus
