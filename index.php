@@ -98,6 +98,7 @@ body{
     background:white;
     padding:25px;
     border-radius:12px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
 h2{
@@ -119,6 +120,7 @@ button{
     border-radius:6px;
     cursor:pointer;
     color:white;
+    font-weight:bold;
 }
 
 .btn-simpan{
@@ -146,6 +148,7 @@ th{
 
 th, td{
     padding:12px;
+    text-align:left;
 }
 
 a{
@@ -153,6 +156,7 @@ a{
     padding:6px 10px;
     color:white;
     border-radius:5px;
+    font-size:14px;
 }
 
 .btn-edit{
@@ -231,13 +235,15 @@ a{
     <table>
 
         <tr>
-            <th>ID</th>
+            <th>No</th>
             <th>Nama</th>
             <th>Password</th>
             <th>Aksi</th>
         </tr>
 
         <?php
+
+        $no = 1;
 
         $data = mysqli_query($koneksi,
             "SELECT * FROM users ORDER BY id DESC"
@@ -249,7 +255,7 @@ a{
 
         <tr>
 
-            <td><?= $d['id']; ?></td>
+            <td><?= $no++; ?></td>
             <td><?= $d['nama']; ?></td>
             <td><?= $d['sandi']; ?></td>
 
