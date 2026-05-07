@@ -245,8 +245,9 @@ a{
 
         $no = 1;
 
+        // ASC = data urut dari pertama ditambahkan
         $data = mysqli_query($koneksi,
-            "SELECT * FROM users ORDER BY id DESC"
+            "SELECT * FROM users ORDER BY id ASC"
         );
 
         while($d = mysqli_fetch_assoc($data)){
